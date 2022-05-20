@@ -28,6 +28,30 @@ public class BinaryTreeDemo {
         System.out.println(heroNode1);
         System.out.println(heroNode2);
         System.out.println(heroNode3);
+//        普通删除版
+//        System.out.println("删除前");
+//        binaryTree.preOrder();
+//        System.out.println("删除 5 后");
+//        binaryTree.delNode(5);
+//        binaryTree.preOrder();
+//        System.out.println("删除 3 后");
+//        binaryTree.delNode(3);
+//        binaryTree.preOrder();
+
+
+//        高级删除版
+//        System.out.println("删除前");
+//        binaryTree.preOrder();
+//        System.out.println("删除 5 后");
+//        binaryTree.delNodePlus(5);
+        binaryTree.preOrder();
+        System.out.println("删除 3 后");
+        binaryTree.delNodePlus(3);
+        binaryTree.preOrder();
+        System.out.println("删除 5 后");
+        binaryTree.delNodePlus(5);
+        binaryTree.preOrder();
+
     }
 }
 class BinaryTree{
@@ -78,6 +102,32 @@ class BinaryTree{
             return  root.afterSearch(num);
         }else {
             return null;
+        }
+    }
+
+    public void delNode(int no){
+        //第一个逻辑的判断
+        if (root != null){
+            //第二个逻辑的判断
+            if(root.getNo() == no){
+                root =null ;
+            }else {
+                root.delNode(no);
+            }
+        }else {
+            System.out.println("空树无法删除");
+        }
+    }
+
+    public  void  delNodePlus(int no){
+        if (root != null){
+            if (root.getNo() ==no){
+                root=null ;
+            }else {
+                root.delNodePlus(no);
+            }
+        }else {
+            System.out.println("空树无法遍历");
         }
     }
 }
@@ -222,5 +272,78 @@ class HeroNode{
         return temp ;
     }
 
+    /**
+     * 以下逻辑：
+     *    1、而且能调用这个方法说明 ，this ！= null ，也就是说这一步的逻辑也要在调用的时候判断
+     *    2、这个this是要删除的父节点，
+     *      也就是说，当要删除的是根节点的时候，下列代码无法删除根节点，所以要在调用这个方法的时候判断
+     * @param no
+     */
+    public void  delNode(int no){
+        if (this.left != null && this.left.no == no){
+            this.left = null ;
+            return;
+        }
+        if (this.right != null && this.right.no == no){
+            this.right = null ;
+            return;
+        }
+        if (this.left != null){
+            this.left.delNode(no);
+        }
+        if (this.right != null){
+            this.right.delNode(no);
+        }
+    }
+
+    /**
+     * 对上述代码进行改进，如果是非叶子节点则不删除下面的子节点
+     * @param no
+     */
+    public  void  delNodePlus(int no){
+        if (this.left != null && this.left.no == no){
+            //判断是不是叶子节点
+            if (this.left.left ==null && this.left.right ==null){
+                this.left = null ;
+                return;
+            }else {
+                if (this.left.left != null && this.left.right != null){
+                    HeroNode temp = null ;
+                    temp=this.left.right;
+                    this.left =this.left.left;
+                    this.left.right = temp ;
+                }else if (this.left.left != null){
+                    this.left =this.left.left ;
+                }else {
+                    this.left=this.left.right ;
+                }
+            }
+            return;
+        }
+        if (this.right != null && this.right.no == no){
+            if (this.right.left == null && this.right.right ==null){
+                this.right =null ;
+                return;
+            }else {
+                if (this.right.left != null && this.right.right ==null){
+                    this.right =this.right.left ;
+                }else if (this.right.left ==null && this.right.right != null){
+                    this.right = this.right.right ;
+                }else {
+                    HeroNode temp = null ;
+                    temp = this.right.right ;
+                    this.right =this.right.left ;
+                    this.right.right =temp ;
+                }
+            }
+            return;
+        }
+        if (this.left != null){
+            this.left.delNode(no);
+        }
+        if (this.right != null){
+            this.right.delNode(no);
+        }
+    }
 
 }
