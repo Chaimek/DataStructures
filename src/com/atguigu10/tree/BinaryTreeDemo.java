@@ -1,5 +1,8 @@
 package com.atguigu10.tree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BinaryTreeDemo {
     public static void main(String[] args) {
         BinaryTree binaryTree = new BinaryTree();
@@ -44,13 +47,20 @@ public class BinaryTreeDemo {
 //        binaryTree.preOrder();
 //        System.out.println("删除 5 后");
 //        binaryTree.delNodePlus(5);
-        binaryTree.preOrder();
-        System.out.println("删除 3 后");
-        binaryTree.delNodePlus(3);
-        binaryTree.preOrder();
-        System.out.println("删除 5 后");
-        binaryTree.delNodePlus(5);
-        binaryTree.preOrder();
+
+//        binaryTree.preOrder();
+//        System.out.println("删除 3 后");
+//        binaryTree.delNodePlus(3);
+//        binaryTree.preOrder();
+//        System.out.println("删除 5 后");
+//        binaryTree.delNodePlus(5);
+//        binaryTree.preOrder();
+
+        System.out.println("-------------");
+        binaryTree.ToArrBinaryTree();
+
+    }
+    public static void  testTreeToArrBinaryTree(){
 
     }
 }
@@ -119,6 +129,7 @@ class BinaryTree{
         }
     }
 
+
     public  void  delNodePlus(int no){
         if (root != null){
             if (root.getNo() ==no){
@@ -128,6 +139,16 @@ class BinaryTree{
             }
         }else {
             System.out.println("空树无法遍历");
+        }
+    }
+
+
+    public void  ToArrBinaryTree(){
+        if (root != null){
+            System.out.println(root);
+            root.ToArrBinaryTree();
+        }else {
+            System.out.println("二叉树为空无法转换");
         }
     }
 }
@@ -297,6 +318,7 @@ class HeroNode{
     }
 
     /**
+     * 在前面条件的基础上
      * 对上述代码进行改进，如果是非叶子节点则不删除下面的子节点
      * @param no
      */
@@ -308,6 +330,10 @@ class HeroNode{
                 return;
             }else {
                 if (this.left.left != null && this.left.right != null){
+                    /**
+                     * 当要删除的节点左右子树都不为空时：
+                     *      这里必须使用一个临时变量temp保存另外那个分支的值，否则在删除节点之后，另外那个分支的值就找不到了
+                     */
                     HeroNode temp = null ;
                     temp=this.left.right;
                     this.left =this.left.left;
@@ -320,7 +346,11 @@ class HeroNode{
             }
             return;
         }
+
         if (this.right != null && this.right.no == no){
+            /**
+             * 注意两种判断的逻辑区别
+             */
             if (this.right.left == null && this.right.right ==null){
                 this.right =null ;
                 return;
@@ -346,4 +376,19 @@ class HeroNode{
         }
     }
 
+    //按层遍历，要顺序二叉树一般是指完全二叉树转化为数组存储
+    public void  ToArrBinaryTree(){
+        if (this.left != null){
+            System.out.println(this.left);
+        }
+        if (this.right != null){
+            System.out.println(this.right);
+        }
+        if (this.left != null){
+            this.left.ToArrBinaryTree();
+        }
+        if (this.right != null){
+            this.right.ToArrBinaryTree();
+        }
+    }
 }
