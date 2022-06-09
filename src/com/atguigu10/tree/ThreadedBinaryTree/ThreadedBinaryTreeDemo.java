@@ -1,75 +1,91 @@
-package com.atguigu10.tree;
+package com.atguigu10.tree.ThreadedBinaryTree ;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BinaryTreeDemo {
+public class ThreadedBinaryTreeDemo {
     public static void main(String[] args) {
-        BinaryTree binaryTree = new BinaryTree();
-        HeroNode  root =  new HeroNode(1,"宋江");
-        HeroNode  node1  =  new HeroNode(2,"吴用");
-        HeroNode  node2  =  new HeroNode(3,"卢俊义");
-        HeroNode  node3 =  new HeroNode(4,"林冲");
-        HeroNode  node4  =  new HeroNode(5,"关胜");
-        binaryTree.setRoot(root);
+        HeroNode root =  new HeroNode(1,"宋江");
+        HeroNode node1  =  new HeroNode(2,"吴用");
+        HeroNode node2  =  new HeroNode(3,"卢俊义");
+        HeroNode node3 =  new HeroNode(4,"林冲");
+        HeroNode node4  =  new HeroNode(5,"关胜");
+        ThreadedBinaryTree threadedBinaryTree = new ThreadedBinaryTree();
+        threadedBinaryTree.setRoot(root);
         root.setLeft(node1);
         root.setRight(node2);
-        node2.setRight(node3);
-        node2.setLeft(node4);
+        node1.setLeft(node3);
+        node1.setRight(node4);
 
-        System.out.println("前序遍历");
-        binaryTree.preOrder();
-        System.out.println("中序遍历");
-        binaryTree.middleOrder();
-        System.out.println("后序遍历");
-        binaryTree.afterOrder();
+        threadedBinaryTree.threadedNode();
+//        threadedBinaryTree.threadedByNode();
+        HeroNode left = node4.getLeft();
+        HeroNode right = node4.getRight();
 
-        System.out.println("前序查找");
-        HeroNode heroNode1 = binaryTree.preSearch(4);
-        HeroNode heroNode2 = binaryTree.middleSearch(6);
-        HeroNode heroNode3 = binaryTree.afterSearch(3);
-        System.out.println(heroNode1);
-        System.out.println(heroNode2);
-        System.out.println(heroNode3);
-//        普通删除版
-//        System.out.println("删除前");
-//        binaryTree.preOrder();
-//        System.out.println("删除 5 后");
-//        binaryTree.delNode(5);
-//        binaryTree.preOrder();
-//        System.out.println("删除 3 后");
-//        binaryTree.delNode(3);
-//        binaryTree.preOrder();
-
-
-//        高级删除版
-//        System.out.println("删除前");
-//        binaryTree.preOrder();
-//        System.out.println("删除 5 后");
-//        binaryTree.delNodePlus(5);
-
-        binaryTree.preOrder();
-        System.out.println("删除 3 后");
-        binaryTree.delNodePlus(3);
-        binaryTree.preOrder();
-        System.out.println("删除 5 后");
-        binaryTree.delNodePlus(5);
-        binaryTree.preOrder();
-
-        System.out.println("-------------");
-        binaryTree.ToArrBinaryTree();
-
-    }
-    public static void  testTreeToArrBinaryTree(){
-
+        System.out.println(left);
+        System.out.println(right);
+        System.out.println("*****");
+        threadedBinaryTree.middleThreadedOrder();
     }
 }
-class BinaryTree{
-    private  HeroNode root ;
+class ThreadedBinaryTree{
+    private HeroNode root ;
+    //当前节点的前一个节点
+    private HeroNode pre = null ;
 
     public void setRoot(HeroNode root) {
         this.root = root;
     }
+
+    /**
+     * 中序遍历二叉树
+     */
+    public  void   middleThreadedOrder(){
+        //因为根节点不能变，需要一个辅助节点帮助我们遍历
+        HeroNode node = root ;
+        while (node != null){
+            //找到一个线索化的节点
+            while (node.getLeftType() == 0){
+                node = node.getLeft() ;
+            }
+            System.out.println(node);
+            while (node.getRightType() == 1){
+                node = node.getRight();
+                System.out.println(node);
+            }
+            node = node.getRight() ;
+        }
+    }
+
+    /**
+     *   中序线索化二叉树
+     */
+    public void threadedNode(){
+        threadedNode(root);
+    }
+
+    public void threadedNode(HeroNode node){
+        if (node == null){
+            return;
+        }
+        //第一步 ：线索化左子树
+        threadedNode(node.getLeft());
+        //第二步 ：线索化当前节点
+        if (node.getLeft() == null){
+            node.setLeft(pre);
+            node.setLeftType(1);
+        }
+        if (pre != null && pre.getRight() == null){
+            pre.setRight(node);
+            pre.setRightType(1);
+        }
+        pre = node ;
+        //第三步 ：线索化右子树
+        threadedNode(node.getRight());
+    }
+
+
+//    //为什么不行 ？ 因为pre不共享
+//    public void threadedByNode(){
+//        root.threadedByNode(pre);
+//    }
 
     public void preOrder(){
         if (this.root != null){
@@ -93,21 +109,21 @@ class BinaryTree{
         }
     }
 
-    public  HeroNode preSearch(int num){
+    public HeroNode preSearch(int num){
         if (root != null){
-           return root.preSearch(num);
+            return root.preSearch(num);
         }else {
             return null;
         }
     }
-    public  HeroNode middleSearch(int num){
+    public HeroNode middleSearch(int num){
         if (root != null){
             return root.middleSearch(num);
         }else {
             return null ;
         }
     }
-    public  HeroNode afterSearch(int num){
+    public HeroNode afterSearch(int num){
         if (root != null){
             return  root.afterSearch(num);
         }else {
@@ -152,12 +168,29 @@ class BinaryTree{
         }
     }
 }
-
 class HeroNode{
     private int no ;
     private String name ;
     private HeroNode left ;
-    private  HeroNode right ;
+    private HeroNode right ;
+    private int leftType  ;
+    private int rightType  ;
+
+    public int getLeftType() {
+        return leftType;
+    }
+
+    public void setLeftType(int leftType) {
+        this.leftType = leftType;
+    }
+
+    public int getRightType() {
+        return rightType;
+    }
+
+    public void setRightType(int rightType) {
+        this.rightType = rightType;
+    }
 
     public int getNo() {
         return no;
@@ -191,6 +224,7 @@ class HeroNode{
         this.right = right;
     }
 
+
     @Override
     public String toString() {
         return "HeroNode{" +
@@ -203,6 +237,29 @@ class HeroNode{
         this.no = no;
         this.name = name;
     }
+//    public void threadedByNode(HeroNode pre){
+//        if (this == null){
+//            return;
+//        }
+//            if (this.left != null){
+//
+//                this.left.threadedByNode(pre);
+//            }
+//
+//        if (this.getLeft() == null ){
+//            this.setLeft(pre);
+//            this.setLeftType(1);
+//        }
+//        if (pre != null && pre.getRight() == null){
+//            pre.setRight(this);
+//            pre.setRightType(1);
+//        }
+//        pre = this ;
+//
+//        if (this.right != null){
+//            this.right.threadedByNode(pre);
+//        }
+//    }
 
     public void  preOrder(){
         System.out.println(this);

@@ -26,6 +26,10 @@ public class SelectSort {
         System.out.println("排序后："+format2);
     }
 
+    /**
+     * 选择排序
+     * @param arr
+     */
     public static void selectSort(int[] arr){
         int minIndex = 0;
         int min = arr[0];
