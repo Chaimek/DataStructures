@@ -1,4 +1,4 @@
-package com.atguigu11.algorithm.greedy;
+package com.atguigu8.greedyAlgorithm;
 
 import java.util.Map;
 import java.util.Set;
@@ -7,6 +7,9 @@ import java.util.TreeMap;
 public class CannonProblem {
     /**
      * 问题描述 ：
+     *      给定一个数组arr，表示从早到晚，依次会出现的导弹的高度 大炮打导弹的时候，如果一旦大炮定了某个高度去打，那么这个大炮每次打的高
+     *      度都必须下降一点
+     *       问 ： 如果所有的导弹都必须拦截，返回最少的大炮数量？
      *     对于一个数组 arr 里面存放了从早到晚打过来的炮弹的高度 ，例如 [22,55,77,88] 第一枚打过来的炮弹的高度是22 ，第二枚是55 ，以此类推
      *     现要使用大炮发射导弹去拦截打过来的炮弹，每次拦截到之后，大炮的高度减 1 ，求 想要把所有炮弹拦截下来，最少需要几门大炮 ？
      *   使用贪心算法 ，贪心的点在对于拦截一个炮弹，选择高度离他最近的一个大炮，如果都没有，则另开一门大炮
