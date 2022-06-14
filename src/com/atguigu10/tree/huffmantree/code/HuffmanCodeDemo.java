@@ -1,33 +1,57 @@
 package com.atguigu10.tree.huffmantree.code;
 
+import com.atguigu10.tree.huffmantree.decoding.HuffmanDecoding;
+
+import java.io.*;
 import java.util.*;
+
 
 public class HuffmanCodeDemo {
     public static void main(String[] args) {
         //第二步：把字符串封装为byte[]
         String str = "i like like like java do you like a java";
+
+        HuffmanCode huffmanCode = new HuffmanCode();
+
+        huffmanCode.codeFile("c:/太阳.txt","c:/太阳.zip");
+        //huffmanCode.unzipFile("c:/太阳.zip","c:/太阳2.txt");
+
+
+//        String str = "i like like java";
 //        byte[] bytes = str.getBytes();
 //        List<Node> list = HuffmanCode.getList(bytes);
 //        Node huffmanTree = HuffmanCode.createHuffmanTree(list);
 //        huffmanTree.preOrder();
 
-        Node huffmanCodeRoot = HuffmanCode.createHuffmanTree(str);
+//        Node huffmanCodeRoot = HuffmanCode.createHuffmanTree(str);
+//
+//        huffmanCodeRoot.preOrder();
+//        HuffmanCode huffmanCode = new HuffmanCode();
+//        Map<Byte, String> codes = huffmanCode.getCodes(huffmanCodeRoot);
+//        System.out.println(codes);
+//        byte[] zip = HuffmanCode.zip(str.getBytes(), codes);
+//        System.out.println(Arrays.toString(zip));
+//
+//        String str2 = "i " ;
+//        Node huffmanTree = HuffmanCode.createHuffmanTree(str2);
+//       huffmanTree.preOrder();
+//        HuffmanCode huffmanCode2 = new HuffmanCode();
+//        Map<Byte, String> codes1 = huffmanCode2.getCodes(huffmanTree);
+//
+//        System.out.println(codes1);
 
-        huffmanCodeRoot.preOrder();
-        HuffmanCode huffmanCode = new HuffmanCode();
-        Map<Byte, String> codes = huffmanCode.getCodes(huffmanCodeRoot);
-        System.out.println(codes);
-        byte[] zip = HuffmanCode.zip(str.getBytes(), codes);
-        System.out.println(Arrays.toString(zip));
-
-        String str2 = "i " ;
-        Node huffmanTree = HuffmanCode.createHuffmanTree(str2);
-       huffmanTree.preOrder();
-        HuffmanCode huffmanCode2 = new HuffmanCode();
-        Map<Byte, String> codes1 = huffmanCode2.getCodes(huffmanTree);
-
-        System.out.println(codes1);
-
+//        HuffmanCode huffmanCode = new HuffmanCode();
+//        byte[] zip = huffmanCode.zip(str.getBytes());
+//        System.out.println(Arrays.toString(zip)+"  "+zip.length);
+//        HuffmanDecoding huffmanDecoding = new HuffmanDecoding();
+//        StringBuilder decoding = huffmanDecoding.byteDecodingToStr(zip);
+//        System.out.println(decoding);
+//        System.out.println();
+//        Node huffmanTree = HuffmanCode.createHuffmanTree(str);
+//        Map<Byte, String> codes = huffmanCode.getCodes(huffmanTree);
+//
+//        byte[] decoding1 = huffmanDecoding.decoding(codes, zip);
+//        System.out.println(new String(decoding1));
 
 
     }
@@ -38,12 +62,124 @@ class HuffmanCode{
 
 
 
-     Map<Byte,String> codeBuffer = new HashMap<>();
-     StringBuilder stringBuilder = new StringBuilder();
+        Map<Byte,String> codeBuffer = new HashMap<>();
+        StringBuilder stringBuilder = new StringBuilder();
 
+      public  void unzipFile(String zipFile ,String desFile) {
+          FileInputStream fileInputStream = null;
+          ObjectInputStream objectInputStream= null;
+          FileOutputStream fileOutputStream = null;
+          try {
+              fileInputStream = new FileInputStream(zipFile);
+              objectInputStream = new ObjectInputStream(fileInputStream);
+              byte[] bytes = (byte[])objectInputStream.readObject();
+              Map<Byte,String> codes=(Map<Byte,String>)objectInputStream.readObject();
+              HuffmanDecoding huffmanDecoding = new HuffmanDecoding();
+              byte[] decoding = huffmanDecoding.decoding(codes, bytes);
+              fileOutputStream = new FileOutputStream(desFile);
+              fileOutputStream.write(decoding);
+          } catch (IOException e) {
+              e.printStackTrace();
+          } catch (ClassNotFoundException e) {
+              e.printStackTrace();
+          } finally {
+              if (fileOutputStream != null){
+                  try {
+                      fileOutputStream.close();
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
+              }
+              if (objectInputStream!=null){
 
+                  try {
+                      objectInputStream.close();
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
+              }
+              if (fileInputStream != null){
 
-     public static byte[] zip(byte[] bytes,Map<Byte,String> huffmanCodes){
+                  try {
+                      fileInputStream.close();
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
+              }
+          }
+
+      }
+
+      public  void codeFile(String srcFile,String dstFile) {
+        FileInputStream fileInputStream = null;
+        FileOutputStream fileOutputStream = null;
+        ObjectOutputStream objectOutputStream = null;
+        try {
+            fileInputStream = new FileInputStream(srcFile);
+            //获得文件有多少个字节
+            int i = fileInputStream.available();
+            byte[] bytes = new byte[i];
+            fileInputStream.read(bytes);
+            HuffmanCode huffmanCodeTree = new HuffmanCode();
+            byte[] zip = huffmanCodeTree.zip(bytes);
+            fileOutputStream = new FileOutputStream(dstFile);
+            objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            /**
+             *  技巧 ：
+             *        写入对象流中
+             */
+            objectOutputStream.writeObject(zip);
+
+            HuffmanCode huffmanCode = new HuffmanCode();
+            objectOutputStream.writeObject(this.codeBuffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (objectOutputStream != null){
+
+                try {
+                    objectOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fileOutputStream != null){
+
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fileInputStream != null){
+
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+            System.out.println("压缩完成~");
+
+    }
+
+     public  byte[] zip(byte[] bytes){
+         //将原数组的每一个byte(他的值对应原来的一个字母)封装在Node中便于操作，并储存在list中，便于排序
+         List<Node> list = getList(bytes);
+         Node huffmanTree = createHuffmanTree(list);
+         Map<Byte, String> codes = this.getCodes(huffmanTree);
+         byte[] zip = zip(bytes, codes);
+         return zip ;
+     }
+
+    /**
+     *
+     * @param bytes 原始的byte数组
+     * @param huffmanCodes 霍夫曼编码
+     * @return 压缩后的数组
+     */
+     private static byte[] zip(byte[] bytes,Map<Byte,String> huffmanCodes){
          StringBuilder stringBuilder = new StringBuilder();
 
          for (byte b : bytes){
@@ -70,7 +206,7 @@ class HuffmanCode{
          return huffmanToCodes;
      }
     /**
-     * 方法重载 ，不能设置为静态！
+     * 方法重载 ，且不能设置为静态！
      * @param node 节点
      * @return  对应的编码
      */
@@ -161,6 +297,8 @@ class HuffmanCode{
         }
     }
 }
+
+
 //第一步 ： 创建Node 节点
 class Node implements Comparable<Node>{
     private Byte data ;
