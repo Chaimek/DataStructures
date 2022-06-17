@@ -1,4 +1,4 @@
-package com.atguigu10.tree;
+package com.atguigu10.tree.BinaryTree;
 
 public class ArrBinaryTreeDemo {
     public static void main(String[] args) {

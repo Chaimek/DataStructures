@@ -1,6 +1,6 @@
 package com.atguigu10.tree.huffmantree.code;
 
-import com.atguigu10.tree.huffmantree.decoding.HuffmanDecoding;
+
 
 import java.io.*;
 import java.util.*;
@@ -9,13 +9,12 @@ import java.util.*;
 public class HuffmanCodeDemo {
     public static void main(String[] args) {
         //第二步：把字符串封装为byte[]
-        String str = "i like like like java do you like a java";
+//        String str = "i like like like java do you like a java";
 
         HuffmanCode huffmanCode = new HuffmanCode();
 
         huffmanCode.codeFile("c:/太阳.txt","c:/太阳.zip");
-        //huffmanCode.unzipFile("c:/太阳.zip","c:/太阳2.txt");
-
+        huffmanCode.unzipFile("c:/太阳.zip","c:/太阳2.txt");
 
 //        String str = "i like like java";
 //        byte[] bytes = str.getBytes();
@@ -62,8 +61,8 @@ class HuffmanCode{
 
 
 
-        Map<Byte,String> codeBuffer = new HashMap<>();
-        StringBuilder stringBuilder = new StringBuilder();
+       static Map<Byte,String> codeBuffer = new HashMap<>();
+       static StringBuilder stringBuilder = new StringBuilder();
 
       public  void unzipFile(String zipFile ,String desFile) {
           FileInputStream fileInputStream = null;
@@ -74,8 +73,7 @@ class HuffmanCode{
               objectInputStream = new ObjectInputStream(fileInputStream);
               byte[] bytes = (byte[])objectInputStream.readObject();
               Map<Byte,String> codes=(Map<Byte,String>)objectInputStream.readObject();
-              HuffmanDecoding huffmanDecoding = new HuffmanDecoding();
-              byte[] decoding = huffmanDecoding.decoding(codes, bytes);
+              byte[] decoding = decoding(codes, bytes);
               fileOutputStream = new FileOutputStream(desFile);
               fileOutputStream.write(decoding);
           } catch (IOException e) {
@@ -128,6 +126,7 @@ class HuffmanCode{
              *  技巧 ：
              *        写入对象流中
              */
+
             objectOutputStream.writeObject(zip);
 
             HuffmanCode huffmanCode = new HuffmanCode();
@@ -161,6 +160,117 @@ class HuffmanCode{
             }
         }
             System.out.println("压缩完成~");
+
+    }
+
+
+    /**
+     *  功能 ：
+     *      将 bytes 数组转化为二进制
+     *      注意：
+     *          最后一个数，根本不需要移 7 位
+     * @param
+     * @return
+     */
+
+    public  StringBuilder byteDecodingToStr(byte[] bytes){
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i <bytes.length -1 ; i++) {
+            for (int j = 7; j >=0 ; j--) {
+                stringBuilder.append((bytes[i] & (1 << j))==0?"0":"1");
+            }
+        }
+        //转化为二进制toBinaryString()方法不带前缀
+        String s = Integer.toBinaryString(bytes[bytes.length - 1]);
+        stringBuilder.append(s);
+        return stringBuilder;
+    }
+
+    /**
+     * 第一种
+     *  ·功能：
+     *      将 bytes 数组转化为二进制
+     * @param bytes
+     * @return
+     */
+    public  StringBuilder  byteToBinaryStr(byte[] bytes){
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean flag =true;
+        for (int i = 0 ; i < bytes.length ; i ++){
+//            flag = (i == bytes.length -1);
+            if (i==bytes.length-1){
+                flag=false;
+            }
+            stringBuilder.append( byteToBinaryStr(flag,bytes[i])) ;
+        }
+        return stringBuilder ;
+    }
+
+    /**
+     *   功能 ： 把一个 byte变成二进制
+     * @param flag 判断要不要补位
+     * @param b
+     * @return
+     */
+    private String byteToBinaryStr(boolean flag , byte b){
+        int temp =  b ;
+        if (flag == true){
+            temp |= 256 ;
+        }
+        //toBinaryString()这个方法会把给的数转化为二进制，没有前缀，
+        String str = Integer.toBinaryString(temp);
+        if (flag){
+            //这里有前缀的原因是做了与运算
+            return str.substring(str.length()-8);
+        }else {
+            return str ;
+        }
+    }
+
+    /**
+     *
+     * @param huffmanCode  哈夫曼编码
+     * @param bytes   需要解码的数据
+     * @return  解码好的 byte[]
+     */
+    public byte[] decoding(Map<Byte,String> huffmanCode , byte[] bytes){
+        //第一步、先把压缩的byte数组转化为二进制
+//        StringBuilder stringBuilder = byteToBinaryStr(bytes);
+        StringBuilder stringBuilder = byteDecodingToStr(bytes);
+        //第二步：逆转哈夫曼编码
+        Map<String , Byte>  map = new HashMap<String,Byte>();
+
+        for (Map.Entry<Byte,String> data: huffmanCode.entrySet()){
+            map.put(data.getValue(),data.getKey());
+        }
+
+        List<Byte> list = new ArrayList<>();
+
+        for (int i = 0; i < stringBuilder.length(); ) {
+            int count = 1;
+            boolean flag = true;
+            Byte temp= null;
+
+            while (flag){
+                String str = stringBuilder.substring(i,i+count);
+                temp=map.get(str);
+                if (temp != null){
+                    flag=false;
+                }else {
+                    count++;
+                }
+            }
+            list.add(temp);
+            i += count;
+
+        }
+
+        byte[] result = new byte[list.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = list.get(i);
+        }
+        return result ;
 
     }
 
@@ -205,6 +315,7 @@ class HuffmanCode{
          }
          return huffmanToCodes;
      }
+
     /**
      * 方法重载 ，且不能设置为静态！
      * @param node 节点

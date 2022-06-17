@@ -30,4 +30,5 @@ public class PrintBinarySystem {
             System.out.print((bytes & (1 << i)) == 0 ?"0":"1");
         }
     }
+
 }

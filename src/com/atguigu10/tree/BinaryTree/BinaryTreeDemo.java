@@ -1,7 +1,6 @@
-package com.atguigu10.tree;
+package com.atguigu10.tree.BinaryTree;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.soap.Node;
 
 public class BinaryTreeDemo {
     public static void main(String[] args) {
@@ -24,13 +23,14 @@ public class BinaryTreeDemo {
         System.out.println("后序遍历");
         binaryTree.afterOrder();
 
-        System.out.println("前序查找");
-        HeroNode heroNode1 = binaryTree.preSearch(4);
-        HeroNode heroNode2 = binaryTree.middleSearch(6);
-        HeroNode heroNode3 = binaryTree.afterSearch(3);
-        System.out.println(heroNode1);
-        System.out.println(heroNode2);
-        System.out.println(heroNode3);
+//        System.out.println("前序查找");
+//        HeroNode heroNode1 = binaryTree.preSearch(4);
+//        HeroNode heroNode2 = binaryTree.middleSearch(6);
+//        HeroNode heroNode3 = binaryTree.afterSearch(3);
+//        System.out.println(heroNode1);
+//        System.out.println(heroNode2);
+//        System.out.println(heroNode3);
+
 //        普通删除版
 //        System.out.println("删除前");
 //        binaryTree.preOrder();
@@ -43,21 +43,21 @@ public class BinaryTreeDemo {
 
 
 //        高级删除版
-//        System.out.println("删除前");
+        System.out.println("删除前");
+        binaryTree.preOrder();
+        System.out.println("删除1后");
+//        binaryTree.delNodePlus(1);
+
+        binaryTree.preOrder();
+//        System.out.println("删除 3 后");
+//        binaryTree.delNodePlus(3);
 //        binaryTree.preOrder();
 //        System.out.println("删除 5 后");
 //        binaryTree.delNodePlus(5);
-
-        binaryTree.preOrder();
-        System.out.println("删除 3 后");
-        binaryTree.delNodePlus(3);
-        binaryTree.preOrder();
-        System.out.println("删除 5 后");
-        binaryTree.delNodePlus(5);
-        binaryTree.preOrder();
-
-        System.out.println("-------------");
-        binaryTree.ToArrBinaryTree();
+//        binaryTree.preOrder();
+//
+//        System.out.println("-------------");
+//        binaryTree.ToArrBinaryTree();
 
     }
     public static void  testTreeToArrBinaryTree(){
@@ -129,18 +129,20 @@ class BinaryTree{
         }
     }
 
-
-    public  void  delNodePlus(int no){
-        if (root != null){
-            if (root.getNo() ==no){
-                root=null ;
-            }else {
-                root.delNodePlus(no);
-            }
-        }else {
-            System.out.println("空树无法遍历");
-        }
-    }
+//
+//    public  void  delNodePlus(int no){
+//        if (root != null){
+//            if (root.getNo() ==no){
+//                HeroNode heroNode = new HeroNode(-1, "");
+//                heroNode.setLeft(root);
+//                heroNode.delNodePlus(no);
+//            }else {
+//                root.delNodePlus(no);
+//            }
+//        }else {
+//            System.out.println("空树无法遍历");
+//        }
+//    }
 
 
     public void  ToArrBinaryTree(){
@@ -158,6 +160,9 @@ class HeroNode{
     private String name ;
     private HeroNode left ;
     private  HeroNode right ;
+
+    public HeroNode() {
+    }
 
     public int getNo() {
         return no;
@@ -316,65 +321,83 @@ class HeroNode{
             this.right.delNode(no);
         }
     }
+    public HeroNode search(){
+        if (this.left !=null){
+            this.left.search();
+        }
+        return this;
+    }
 
     /**
      * 在前面条件的基础上
-     * 对上述代码进行改进，如果是非叶子节点则不删除下面的子节点
-     * @param no
+     * 对上述代码进行改进，如果是非叶子节点则不删除下面的子节点 以下代码存在问题 ，具体实现可以看二叉排序树里面的删除
+     * @param
      */
-    public  void  delNodePlus(int no){
-        if (this.left != null && this.left.no == no){
-            //判断是不是叶子节点
-            if (this.left.left ==null && this.left.right ==null){
-                this.left = null ;
-                return;
-            }else {
-                if (this.left.left != null && this.left.right != null){
-                    /**
-                     * 当要删除的节点左右子树都不为空时：
-                     *      这里必须使用一个临时变量temp保存另外那个分支的值，否则在删除节点之后，另外那个分支的值就找不到了
-                     */
-                    HeroNode temp = null ;
-                    temp=this.left.right;
-                    this.left =this.left.left;
-                    this.left.right = temp ;
-                }else if (this.left.left != null){
-                    this.left =this.left.left ;
-                }else {
-                    this.left=this.left.right ;
-                }
-            }
-            return;
-        }
-
-        if (this.right != null && this.right.no == no){
-            /**
-             * 注意两种判断的逻辑区别
-             */
-            if (this.right.left == null && this.right.right ==null){
-                this.right =null ;
-                return;
-            }else {
-                if (this.right.left != null && this.right.right ==null){
-                    this.right =this.right.left ;
-                }else if (this.right.left ==null && this.right.right != null){
-                    this.right = this.right.right ;
-                }else {
-                    HeroNode temp = null ;
-                    temp = this.right.right ;
-                    this.right =this.right.left ;
-                    this.right.right =temp ;
-                }
-            }
-            return;
-        }
-        if (this.left != null){
-            this.left.delNode(no);
-        }
-        if (this.right != null){
-            this.right.delNode(no);
-        }
-    }
+//    public  void  delNodePlus(int no){
+//        if (this.left != null && this.left.no == no){
+//            //判断是不是叶子节点
+//            if (this.left.left ==null && this.left.right ==null){
+//                this.left = null ;
+//                return;
+//            }else {
+//                if (this.left.left != null && this.left.right != null){
+//                    /**
+//                     * 当要删除的节点左右子树都不为空时：
+//                     *      这里必须使用一个临时变量temp保存另外那个分支的值，否则在删除节点之后，另外那个分支的值就找不到了
+//                     */
+//                    HeroNode temp = null ;
+//                    if (this.left.no == no){
+//                        temp=this.left.right;
+//                        HeroNode search = this.left.left.search();
+//                        this.left =this.left.left;
+//                        search.right= temp ;
+//                        this.left.right=null;
+//                    }else if (this.right.no == no){
+//                        temp=this.right.right;
+//                        HeroNode search = this.right.left.search();
+//                        this.right =this.right.left;
+//                        search.right= temp ;
+//                        this.right.right=null;
+//                    }
+//
+//
+//                }else if (this.left.left != null){
+//                    this.left =this.left.left ;
+//                }else {
+//                    this.left=this.left.right ;
+//                }
+//            }
+//            return;
+//        }
+//
+//        if (this.right != null && this.right.no == no){
+//            /**
+//             * 注意两种判断的逻辑区别
+//             */
+//            if (this.right.left == null && this.right.right ==null){
+//                this.right =null ;
+//                return;
+//            }else {
+//                if (this.right.left != null && this.right.right ==null){
+//                    this.right =this.right.left ;
+//                }else if (this.right.left ==null && this.right.right != null){
+//                    this.right = this.right.right ;
+//                }else {
+//                    HeroNode temp = null ;
+//                    temp = this.right.right ;
+//                    this.right =this.right.left ;
+//                    this.right.right =temp ;
+//                }
+//            }
+//            return;
+//        }
+//        if (this.left != null){
+//            this.left.delNode(no);
+//        }
+//        if (this.right != null){
+//            this.right.delNode(no);
+//        }
+//    }
 
     //按层遍历，要顺序二叉树一般是指完全二叉树转化为数组存储
     public void  ToArrBinaryTree(){

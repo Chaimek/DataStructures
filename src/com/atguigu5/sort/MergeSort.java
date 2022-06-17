@@ -46,7 +46,7 @@ public class MergeSort {
             //向右分
             mergeSort(arr, mid+1, right, temp);
             //当执行到这一步的时候，说明已经分完了
-            merge(arr,left,mid,right,temp);
+                merge(arr,left,mid,right,temp);
         }
     }
 

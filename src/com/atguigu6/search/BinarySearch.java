@@ -13,8 +13,12 @@ public class BinarySearch {
         int[] arr = {1,2,2,2,2,3,4,5};
 //        int i = binarySearch(arr, 0, arr.length, 2);
 //        System.out.println(i);
+        int i = binarySearch(arr, 0, arr.length - 1, 2);
+        System.out.println(i);
         List<Integer> integers = binarySearch2(arr, 0, arr.length - 1, 2);
         System.out.println(integers);
+        int[] arr2 = {1,5,6,8,11,22,44};
+        System.out.println(binarySearchNoRecursion(arr2, 5));
     }
 
     /**
@@ -32,6 +36,7 @@ public class BinarySearch {
         if (left>right || findVal<arr[0] || findVal >arr[arr.length-1]){
             return -1 ;
         }
+
         if (findVal > midVal ){
            return binarySearch(arr, mid+1, right, findVal);
         }else if (findVal<midVal){
@@ -77,4 +82,25 @@ public class BinarySearch {
         }
 
     }
+
+    /**
+     * 二分查找非递归的方式
+     * @return
+     */
+    public static int binarySearchNoRecursion(int[] arr , int target){
+        int left = 0 ;
+        int right = arr.length-1;
+        while (left < right){
+            int mid = ( left + right ) / 2 ;
+            if (arr[mid] == target){
+                return mid ;
+            }else if (arr[mid] > target){
+                right = mid -1 ;
+            }else {
+                left = mid + 1 ;
+            }
+        }
+        return -1 ;
+    }
+
 }
